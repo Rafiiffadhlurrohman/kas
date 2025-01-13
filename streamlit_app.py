@@ -1,55 +1,37 @@
 import streamlit as st
 
-class Baju:
-    def __init__(self, nama, harga, jumlah):
-        self.nama = nama
-        self.harga = harga
-        self.jumlah = jumlah
+# Data Keranjang
+cart = []
 
-    def total_harga(self):
-        return self.harga * self.jumlah
+# Fungsi untuk menambah barang ke keranjang
+def add_to_cart(product, price):
+    cart.append({"product": product, "price": price})
 
-class Kasir:
-    def __init__(self):
-        self.daftar_baju = []
+# Judul Aplikasi
+st.title("Aplikasi Kasir Toko Baju")
 
-    def tambah_baju(self, baju):
-        self.daftar_baju.append(baju)
+# Input Produk
+product_name = st.text_input("Nama Produk")
+product_price = st.number_input("Harga Produk", min_value=0.0, format="%.2f")
 
-    def hitung_total(self):
-        total = 0
-        for baju in self.daftar_baju:
-            total += baju.total_harga()
-        return total
+if st.button("Tambahkan ke Keranjang"):
+    add_to_cart(product_name, product_price)
+    st.success(f"{product_name} berhasil ditambahkan ke keranjang dengan harga Rp{product_price:.2f}!")
 
-    def tampilkan_struk(self):
-        struk = "Struk Belanja\n" + "-"*27 + "\n"
-        for baju in self.daftar_baju:
-            struk += f"{baju.nama}: {baju.jumlah} x {baju.harga} = {baju.total_harga()}\n"
-        struk += "-"*27 + "\n"
-        struk += f"Total: {self.hitung_total()}\n"
-        return struk
+# Menampilkan Keranjang
+st.subheader("Keranjang")
+if cart:
+    for item in cart:
+        st.write(f"{item['product']} - Rp{item['price']:.2f}")
+else:
+    st.write("Keranjang kosong")
 
-def main():
-    st.title("Program Kasir Baju")
-    kasir = Kasir()
+# Total
+if cart:
+    total = sum(item['price'] for item in cart)
+    st.subheader(f"Total: Rp{total:.2f}")
+    if st.button("Proses Pembayaran"):
+        st.success("Pembayaran berhasil diproses!")
+else:
+    st.subheader("Silakan tambahkan produk ke keranjang")
 
-    st.subheader("Input Data Baju")
-    nama = st.text_input("Masukkan nama baju")
-    harga = st.number_input("Masukkan harga baju", min_value=0.0, step=0.01)
-    jumlah = st.number_input("Masukkan jumlah baju", min_value=1, step=1)
-
-    if st.button("Tambah Baju"):
-        if nama and harga and jumlah:
-            baju = Baju(nama, harga, jumlah)
-            kasir.tambah_baju(baju)
-            st.success(f"{nama} berhasil ditambahkan!")
-        else:
-            st.error("Silakan lengkapi semua data baju!")
-
-    if st.button("Tampilkan Struk"):
-        struk = kasir.tampilkan_struk()
-        st.text(struk)
-
-if __name__ == "__main__":
-    main()
